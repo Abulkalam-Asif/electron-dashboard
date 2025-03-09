@@ -1,4 +1,4 @@
-# electron-vite-dashboard
+# electron-dashboard
 
 An Electron application with React and TypeScript
 

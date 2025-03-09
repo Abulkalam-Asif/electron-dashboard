@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: electron-vite-dashboard
+productName: electron-dashboard
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-vite-dashboard
+  executableName: electron-dashboard
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
