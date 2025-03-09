@@ -1,0 +1,1 @@
+export const SETTINGS_DOC_ID = "SETTINGS_DOC";

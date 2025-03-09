@@ -1,0 +1,33 @@
+.linksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.link {
+  padding: .5rem 1.5rem;
+  color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: black;
+  transition: color 0.3s, background-color 0.3s;
+  text-align: center;
+}
+
+.link:hover {
+  background-color: white;
+  color: black;
+}
+
+.logout {
+  background-color: red;
+  border-color: red;
+}
+
+.logout:hover {
+  background-color: white;
+  color: red;
+}

@@ -1,0 +1,100 @@
+/* Container styles */
+.container {
+  max-width: 1280px; /* equivalent to max-w-7xl */
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem; /* equivalent to p-4 */
+}
+
+/* Content styles */
+.content {
+  text-align: center;
+  margin-bottom: 2rem; /* equivalent to mb-8 */
+}
+
+/* Logo and title container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem; /* equivalent to mb-4 */
+}
+
+.logo {
+  height: 2.5rem; /* equivalent to h-10 */
+  width: 2.5rem; /* equivalent to w-10 */
+}
+
+.title {
+  font-size: 1.125rem; /* equivalent to text-lg */
+  font-weight: 700; /* equivalent to font-bold */
+  display: inline-block;
+  margin-left: 0.5rem; /* equivalent to ml-2 */
+}
+
+.highlight {
+  color: #4a148c; /* equivalent to text-[#4A148C] */
+}
+
+.subtitle {
+  font-size: 1.5rem; /* equivalent to text-2xl */
+  font-weight: 700; /* equivalent to font-bold */
+  margin-bottom: 1rem; /* equivalent to mb-4 */
+}
+
+/* Message container */
+.message-container {
+  max-width: 28rem; /* equivalent to max-w-md */
+  margin: 0 auto;
+}
+
+.message {
+  color: #4b5563; /* equivalent to text-gray-600 */
+  margin-bottom: 1rem; /* equivalent to mb-4 */
+}
+
+.email {
+  font-weight: 500; /* equivalent to font-medium */
+}
+
+.note {
+  font-size: 0.875rem; /* equivalent to text-sm */
+  color: #6b7280; /* equivalent to text-gray-500 */
+}
+
+/* Loading indicator */
+.loading {
+  margin-top: 1rem; /* equivalent to mt-4 */
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  border-radius: 50%; /* equivalent to rounded-full */
+  height: 1.5rem; /* equivalent to h-6 */
+  width: 1.5rem; /* equivalent to w-6 */
+  border-top: 2px solid #4a148c; /* equivalent to border-t-2 border-[#4A148C] */
+  border-bottom: 2px solid #4a148c; /* equivalent to border-b-2 border-[#4A148C] */
+  margin: 0 auto;
+}
+
+.checking-text {
+  font-size: 0.875rem; /* equivalent to text-sm */
+  color: #6b7280; /* equivalent to text-gray-500 */
+  margin-top: 0.5rem; /* equivalent to mt-2 */
+  text-align: center;
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

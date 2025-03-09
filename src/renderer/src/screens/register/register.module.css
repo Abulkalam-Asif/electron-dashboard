@@ -1,0 +1,22 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.button {
+  margin-top: 1rem;
+}
+
+.signup {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.error {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+

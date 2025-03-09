@@ -1,0 +1,32 @@
+.link {
+  color: white;
+  border: 2px solid black;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: black;
+  transition: color 0.3s, background-color 0.3s;
+  text-align: center;
+}
+
+.link:hover {
+  background-color: white;
+  color: black;
+}
+
+.small {
+  padding: .375rem 1.125rem;
+  font-size: .75rem;
+  border-radius: .375rem;
+}
+
+.medium {
+  padding: .5rem 1.5rem;
+  font-size: 1rem;
+  border-radius: .5rem;
+}
+
+.large {
+  padding: .625rem 1.875rem;
+  font-size: 1.25rem;
+  border-radius: .625rem;
+}

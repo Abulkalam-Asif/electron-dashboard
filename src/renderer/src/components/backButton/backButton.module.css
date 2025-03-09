@@ -1,0 +1,17 @@
+.button {
+  padding: .5rem;
+  color: white;
+  border: 2px solid black;
+  border-radius: .5rem;
+  cursor: pointer;
+  background-color: black;
+  transition: color 0.3s, background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover {
+  background-color: white;
+  color: black;
+}
