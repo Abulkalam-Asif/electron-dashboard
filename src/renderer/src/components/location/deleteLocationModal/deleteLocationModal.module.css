@@ -1,0 +1,21 @@
+.modalCard {
+  max-width: 40rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+
+.delete {
+  background-color: red;
+  border-color: red;
+}
+
+.delete:hover,
+.delete:focus {
+  background-color: white;
+  color: red;
+}

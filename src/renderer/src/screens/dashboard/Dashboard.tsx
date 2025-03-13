@@ -12,7 +12,7 @@ function Dashboard() {
     navigate('/login')
   }
   return (
-    <Card>
+    <Card cardClassName={styles.card}>
       <H1>Dashboard</H1>
       <div className={styles.linksContainer}>
         <LinkButton to="/location">Locations</LinkButton>

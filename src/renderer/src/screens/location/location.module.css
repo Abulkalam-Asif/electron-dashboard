@@ -2,7 +2,6 @@
   max-width: 80rem;
   width: 100%;
   padding: 1.5rem;
-  margin: 0 auto;
 }
 
 .header {
@@ -46,7 +45,8 @@
   border-color: red;
 }
 
-.delete:hover {
+.delete:hover,
+.delete:focus {
   background-color: white;
   color: red;
 }

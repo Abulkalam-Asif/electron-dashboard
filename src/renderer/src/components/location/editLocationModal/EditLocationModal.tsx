@@ -11,11 +11,11 @@ import Modal from '@renderer/components/general/modal/Modal'
 import CloseButton from '@renderer/components/general/closeButton/CloseButton'
 
 type EditLocationModalProps = {
-  hideEditLocationModal: () => void
+  setEditModalToDefault: () => void
   editLocationData: LocationWithIdType
 }
 
-function EditLocationModal({ hideEditLocationModal, editLocationData }: EditLocationModalProps) {
+function EditLocationModal({ setEditModalToDefault, editLocationData }: EditLocationModalProps) {
   const [editLocationMutation] = useMutation(EDIT_LOCATION)
 
   const [locationData, setLocationData] = useState(editLocationData)
@@ -92,7 +92,7 @@ function EditLocationModal({ hideEditLocationModal, editLocationData }: EditLoca
     }
     setIsLoading(false)
     setIsFirstSubmit(false)
-    hideEditLocationModal()
+    setEditModalToDefault()
   }
 
   return (
@@ -100,7 +100,7 @@ function EditLocationModal({ hideEditLocationModal, editLocationData }: EditLoca
       <Modal cardClassName={styles.modalCard}>
         <div className={styles.header}>
           <H1>Location</H1>
-          <CloseButton onClick={hideEditLocationModal} />
+          <CloseButton onClick={setEditModalToDefault} />
         </div>
         <form className={styles.form}>
           <InputBox

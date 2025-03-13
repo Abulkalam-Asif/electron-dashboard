@@ -98,7 +98,7 @@ function Login() {
   }
 
   return (
-    <Card>
+    <Card cardClassName={styles.card}>
       <H1>Login</H1>
       <form className={styles.form}>
         {error && <p className={styles.error}>{error}</p>}

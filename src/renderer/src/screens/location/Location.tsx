@@ -9,6 +9,8 @@ import Loader from '@renderer/components/general/loader/Loader'
 import Button from '@renderer/components/general/button/Button'
 import AddNewLocationModal from '@renderer/components/location/addNewLocationModal/AddNewLocationModal'
 import EditLocationModal from '@renderer/components/location/editLocationModal/EditLocationModal'
+import BackButton from '@renderer/components/general/backButton/BackButton'
+import DeleteLocationModal from '@renderer/components/location/deleteLocationModal/DeleteLocationModal'
 
 const Location = () => {
   const { data, loading, error } = useQuery(GET_ALL_LOCATIONS)
@@ -18,9 +20,18 @@ const Location = () => {
   const hideAddLocationModal = () => setIsAddLocationModalVisible(false)
 
   const [isEditLocationModalVisible, setIsEditLocationModalVisible] = useState(false)
-  const hideEditLocationModal = () => setIsEditLocationModalVisible(false)
-
   const [editLocationData, setEditLocationData] = useState<LocationWithIdType | null>(null)
+  const setEditModalToDefault = () => {
+    setIsEditLocationModalVisible(false)
+    setEditLocationData(null)
+  }
+
+  const [isDeleteLocationModalVisible, setIsDeleteLocationModalVisible] = useState(false)
+  const [deleteLocationId, setDeleteLocationId] = useState('')
+  const setDeleteModalToDefault = () => {
+    setIsDeleteLocationModalVisible(false)
+    setDeleteLocationId('')
+  }
 
   useEffect(() => {
     if (data) {
@@ -31,14 +42,11 @@ const Location = () => {
   if (loading) return <Loader text="Fetching locations..." />
   if (error) return <p>Error: {error.message}</p>
 
-  const deleteHandler = () => {
-    console.log('Delete location')
-  }
-
   return (
     <>
-      <Card sectionClassName={styles.card}>
+      <Card cardClassName={styles.card}>
         <div className={styles.header}>
+          <BackButton to="/" />
           <H1>Locations</H1>
           <Button onClick={() => setIsAddLocationModalVisible(true)} size="sm">
             + Add Location
@@ -75,7 +83,14 @@ const Location = () => {
                           >
                             Edit
                           </Button>
-                          <Button size="sm" onClick={deleteHandler} className={styles.delete}>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setDeleteLocationId(location.id)
+                              setIsDeleteLocationModalVisible(true)
+                            }}
+                            className={styles.delete}
+                          >
                             Delete
                           </Button>
                         </div>
@@ -93,8 +108,14 @@ const Location = () => {
       )}
       {isEditLocationModalVisible && editLocationData && (
         <EditLocationModal
-          hideEditLocationModal={hideEditLocationModal}
+          setEditModalToDefault={setEditModalToDefault}
           editLocationData={editLocationData}
+        />
+      )}
+      {isDeleteLocationModalVisible && (
+        <DeleteLocationModal
+          deleteLocationId={deleteLocationId}
+          setDeleteModalToDefault={setDeleteModalToDefault}
         />
       )}
     </>
