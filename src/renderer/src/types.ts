@@ -1,23 +1,23 @@
 export type LocationType = {
-  locationName: string;
-  description: string;
-  locationPin: string;
-};
+  name: string
+  description: string
+  pin: string
+}
 
 export type LocationWithIdType = LocationType & {
-  id: string;
-};
+  id: string
+}
 
 export type AttendanceDeviceType = {
-  deviceName: string;
-  ipAddress: string;
-  port: string;
-  serialNumber: string;
-  locationRef: string;
-};
+  deviceName: string
+  ipAddress: string
+  port: string
+  serialNumber: string
+  locationRef: string
+}
 
 export type SettingsType = {
-  ipOrDomain: string;
-  port: string;
-  apiKey: string;
-};
+  ipOrDomain: string
+  port: string
+  apiKey: string
+}

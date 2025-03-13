@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import Card from "../../components/card/Card";
-import H1 from "../../components/h1/H1";
-import InputBox from "../../components/inputBox/InputBox";
-import Button from "../../components/button/Button";
-import BackButton from "../../components/backButton/BackButton";
-import Spinner from "../../components/spinner/Spinner";
+import Card from "../../components/general/card/Card";
+import H1 from "../../components/general/h1/H1";
+import InputBox from "../../components/general/inputBox/InputBox";
+import Button from "../../components/general/button/Button";
+import BackButton from "../../components/general/closeButton/CloseButton";
+import Loader from "../../components/general/loader/Loader";
 import styles from "./settings.module.css";
 import getSettings from "../../actions/getSettings";
 import { SettingsType } from "../../types";
@@ -95,7 +95,7 @@ function Settings() {
   };
 
   if (loading) {
-    return <Spinner text="Loading settings..." />;
+    return <Loader text="Loading settings..." />;
   }
 
   return (
@@ -136,7 +136,7 @@ function Settings() {
           Save
         </Button>
       </form>
-      {isSubmitting && <Spinner text="Saving settings..." />}
+      {isSubmitting && <Loader text="Saving settings..." />}
     </Card>
   );
 }

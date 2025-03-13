@@ -1,95 +1,101 @@
-"use client";
+'use client'
 
-import type React from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./login.module.css";
-import Card from "../../components/card/Card";
-import H1 from "../../components/h1/H1";
-import InputBox from "../../components/inputBox/InputBox";
-import { useState, useEffect } from "react";
-import Button from "../../components/button/Button";
-// import LinkButton from "../../components/linkButton/LinkButton";
-import Spinner from "../../components/spinner/Spinner";
-import { loginUser } from "../../actions/authAction";
+import type React from 'react'
+import { useNavigate } from 'react-router-dom'
+import styles from './login.module.css'
+import Card from '../../components/general/card/Card'
+import H1 from '../../components/general/h1/H1'
+import InputBox from '../../components/general/inputBox/InputBox'
+import { useState, useEffect } from 'react'
+import Button from '../../components/general/button/Button'
+import Loader from '../../components/general/loader/Loader'
+import { useMutation } from '@apollo/client'
+import { LOGIN_USER } from '@renderer/graphql/auth'
 
 const defaultLoginData = {
-  username: "",
-  password: "",
-};
+  username: '',
+  password: ''
+}
 
 function Login() {
-  const [loginData, setLoginData] = useState(defaultLoginData);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFirstSubmit, setIsFirstSubmit] = useState(false);
+  const [loginData, setLoginData] = useState(defaultLoginData)
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFirstSubmit, setIsFirstSubmit] = useState(false)
   const [errors, setErrors] = useState({
-    username: "",
-    password: "",
-  });
-  const navigate = useNavigate();
+    username: '',
+    password: ''
+  })
+  const navigate = useNavigate()
+  const [loginUserMutation] = useMutation(LOGIN_USER)
 
   const loginDataInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { value, name } = e.target
+    setLoginData((prev) => ({ ...prev, [name]: value }))
+  }
 
   useEffect(
     function validateOnInputChange() {
       if (isFirstSubmit) {
-        validateInput(loginData);
+        validateInput(loginData)
       }
     },
     [loginData]
-  );
+  )
 
   const validateInput = (loginData: typeof defaultLoginData) => {
     const newErrors = {
-      username: "",
-      password: "",
-    };
-    let isValid = true;
-
-    if (loginData.username === "") {
-      newErrors.username = "Username is required";
-      isValid = false;
+      username: '',
+      password: ''
     }
-    if (loginData.password === "") {
-      newErrors.password = "Password is required";
-      isValid = false;
+    let isValid = true
+
+    if (loginData.username === '') {
+      newErrors.username = 'Username is required'
+      isValid = false
+    }
+    if (loginData.password === '') {
+      newErrors.password = 'Password is required'
+      isValid = false
     }
 
-    setErrors(newErrors);
-    return isValid;
-  };
+    setErrors(newErrors)
+    return isValid
+  }
 
   const loginHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!isFirstSubmit) {
-      setIsFirstSubmit(true);
+      setIsFirstSubmit(true)
     }
-    setIsLoading(true);
-    setError("");
+    setIsLoading(true)
+    setError('')
 
     if (!validateInput(loginData)) {
-      setIsLoading(false);
-      return;
+      setIsLoading(false)
+      return
     }
 
     try {
-      const response = await loginUser(loginData);
-      if (!response) {
-        throw new Error("Invalid username or password");
+      const { data } = await loginUserMutation({
+        variables: {
+          username: loginData.username,
+          password: loginData.password
+        }
+      })
+      if (!data || !data.loginUser) {
+        throw new Error('Invalid username or password')
       }
-      localStorage.setItem("token", response);
-      alert("Login successful");
-      navigate("/");
+      localStorage.setItem('token', data.loginUser)
+      alert('Login successful')
+      navigate('/')
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Login failed')
+      console.error(err)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Card>
@@ -113,22 +119,13 @@ function Login() {
           error={errors.password} // Pass error message to InputBox
         />
 
-        <Button
-          disabled={isLoading}
-          onClick={loginHandler}
-          className={styles.button}>
+        <Button disabled={isLoading} onClick={loginHandler} className={styles.button}>
           Login
         </Button>
       </form>
-      {/* <p className={styles.register}>
-        Don't have an account?{" "}
-        <LinkButton to="/register" size="sm">
-          Register
-        </LinkButton>
-      </p> */}
-      {isLoading && <Spinner text="Logging in..." />}
+      {isLoading && <Loader text="Logging in..." />}
     </Card>
-  );
+  )
 }
 
-export default Login;
+export default Login

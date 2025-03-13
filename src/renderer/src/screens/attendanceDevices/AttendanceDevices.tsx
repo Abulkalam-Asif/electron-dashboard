@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import Card from "../../components/card/Card";
-import H1 from "../../components/h1/H1";
-import InputBox from "../../components/inputBox/InputBox";
-import Button from "../../components/button/Button";
-import BackButton from "../../components/backButton/BackButton";
+import Card from "../../components/general/card/Card";
+import H1 from "../../components/general/h1/H1";
+import InputBox from "../../components/general/inputBox/InputBox";
+import Button from "../../components/general/button/Button";
+import BackButton from "../../components/general/closeButton/CloseButton";
 import styles from "./attendanceDevices.module.css";
 import getAllLocations from "../../actions/getAllLocations";
 import { AttendanceDeviceType, LocationWithIdType } from "../../types";
-import SelectBox from "../../components/selectBox/selectBox";
-import Spinner from "../../components/spinner/Spinner";
+import SelectBox from "../../components/general/selectBox/selectBox";
+import Loader from "../../components/general/loader/Loader";
 import addNewAttendanceDevice from "../../actions/addNewAttendanceDevice";
 
 const defaultDeviceData: AttendanceDeviceType = {
@@ -124,7 +124,7 @@ function AttendanceDevices() {
         <H1>Attendance Devices</H1>
       </div>
       {isFetchingLocations ? (
-        <Spinner text="Fetching locations..." />
+        <Loader text="Fetching locations..." />
       ) : !isFetchingLocations && locations.length === 0 ? (
         <p className={styles.noLocationsMessage}>
           No locations found. Please add a location first to add a device.
@@ -169,7 +169,7 @@ function AttendanceDevices() {
               name="locationRef"
               label="Location"
               options={locations.map((location) => ({
-                label: location.locationName,
+                label: location.name,
                 value: location.id,
               }))}
               value={deviceData.locationRef}
@@ -182,7 +182,7 @@ function AttendanceDevices() {
               className={styles.button}>
               Save
             </Button>
-            {isLoading && <Spinner text="Adding device..." />}
+            {isLoading && <Loader text="Adding device..." />}
           </form>
         )
       )}

@@ -17,7 +17,8 @@
   text-align: center;
 }
 
-.link:hover {
+.link:hover,
+.link:focus {
   background-color: white;
   color: black;
 }
@@ -27,7 +28,8 @@
   border-color: red;
 }
 
-.logout:hover {
+.logout:hover,
+.logout:focus {
   background-color: white;
   color: red;
 }
