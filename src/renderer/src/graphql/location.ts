@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client";
 
 export const GET_ALL_LOCATIONS = gql`
   query GetAllLocations {
@@ -9,22 +9,37 @@ export const GET_ALL_LOCATIONS = gql`
       pin
     }
   }
-`
+`;
 
 export const ADD_NEW_LOCATION = gql`
   mutation AddNewLocation($name: String!, $description: String!, $pin: String!) {
-    addNewLocation(name: $name, description: $description, pin: $pin)
+    addNewLocation(name: $name, description: $description, pin: $pin) {
+      success
+      message
+      location {
+        id
+        name
+        description
+        pin
+      }
+    }
   }
-`
+`;
 
 export const EDIT_LOCATION = gql`
   mutation EditLocation($id: ID!, $name: String!, $description: String!, $pin: String!) {
-    editLocation(id: $id, name: $name, description: $description, pin: $pin)
+    editLocation(id: $id, name: $name, description: $description, pin: $pin) {
+      success
+      message
+    }
   }
-`
+`;
 
 export const DELETE_LOCATION = gql`
   mutation DeleteLocation($id: ID!) {
-    deleteLocation(id: $id)
+    deleteLocation(id: $id) {
+      success
+      message
+    }
   }
-`
+`;

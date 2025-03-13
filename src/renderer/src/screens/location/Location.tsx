@@ -1,46 +1,46 @@
-import { useQuery } from '@apollo/client'
-import { GET_ALL_LOCATIONS } from '@renderer/graphql/location'
-import { LocationWithIdType } from '@renderer/types'
-import { useEffect, useState } from 'react'
-import styles from './location.module.css'
-import Card from '@renderer/components/general/card/Card'
-import H1 from '@renderer/components/general/h1/H1'
-import Loader from '@renderer/components/general/loader/Loader'
-import Button from '@renderer/components/general/button/Button'
-import AddNewLocationModal from '@renderer/components/location/addNewLocationModal/AddNewLocationModal'
-import EditLocationModal from '@renderer/components/location/editLocationModal/EditLocationModal'
-import BackButton from '@renderer/components/general/backButton/BackButton'
-import DeleteLocationModal from '@renderer/components/location/deleteLocationModal/DeleteLocationModal'
+import { useQuery } from "@apollo/client";
+import { GET_ALL_LOCATIONS } from "@renderer/graphql/location";
+import { LocationWithIdType } from "@renderer/types";
+import { useEffect, useState } from "react";
+import styles from "./location.module.css";
+import Card from "@renderer/components/general/card/Card";
+import H1 from "@renderer/components/general/h1/H1";
+import Loader from "@renderer/components/general/loader/Loader";
+import Button from "@renderer/components/general/button/Button";
+import AddNewLocationModal from "@renderer/components/location/addNewLocationModal/AddNewLocationModal";
+import EditLocationModal from "@renderer/components/location/editLocationModal/EditLocationModal";
+import BackButton from "@renderer/components/general/backButton/BackButton";
+import DeleteLocationModal from "@renderer/components/location/deleteLocationModal/DeleteLocationModal";
 
 const Location = () => {
-  const { data, loading, error } = useQuery(GET_ALL_LOCATIONS)
-  const [allLocations, setAllLocations] = useState<LocationWithIdType[] | null>(null)
+  const { data, loading, error } = useQuery(GET_ALL_LOCATIONS);
+  const [allLocations, setAllLocations] = useState<LocationWithIdType[] | null>(null);
 
-  const [isAddLocationModalVisible, setIsAddLocationModalVisible] = useState(false)
-  const hideAddLocationModal = () => setIsAddLocationModalVisible(false)
+  const [isAddLocationModalVisible, setIsAddLocationModalVisible] = useState(false);
+  const hideAddLocationModal = () => setIsAddLocationModalVisible(false);
 
-  const [isEditLocationModalVisible, setIsEditLocationModalVisible] = useState(false)
-  const [editLocationData, setEditLocationData] = useState<LocationWithIdType | null>(null)
+  const [isEditLocationModalVisible, setIsEditLocationModalVisible] = useState(false);
+  const [editLocationData, setEditLocationData] = useState<LocationWithIdType | null>(null);
   const setEditModalToDefault = () => {
-    setIsEditLocationModalVisible(false)
-    setEditLocationData(null)
-  }
+    setIsEditLocationModalVisible(false);
+    setEditLocationData(null);
+  };
 
-  const [isDeleteLocationModalVisible, setIsDeleteLocationModalVisible] = useState(false)
-  const [deleteLocationId, setDeleteLocationId] = useState('')
+  const [isDeleteLocationModalVisible, setIsDeleteLocationModalVisible] = useState(false);
+  const [deleteLocationId, setDeleteLocationId] = useState("");
   const setDeleteModalToDefault = () => {
-    setIsDeleteLocationModalVisible(false)
-    setDeleteLocationId('')
-  }
+    setIsDeleteLocationModalVisible(false);
+    setDeleteLocationId("");
+  };
 
   useEffect(() => {
     if (data) {
-      setAllLocations(data.getAllLocations)
+      setAllLocations(data.getAllLocations);
     }
-  }, [data])
+  }, [data]);
 
-  if (loading) return <Loader text="Fetching locations..." />
-  if (error) return <p>Error: {error.message}</p>
+  if (loading) return <Loader text="Fetching locations..." />;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <>
@@ -77,8 +77,8 @@ const Location = () => {
                           <Button
                             size="sm"
                             onClick={() => {
-                              setEditLocationData(location)
-                              setIsEditLocationModalVisible(true)
+                              setEditLocationData(location);
+                              setIsEditLocationModalVisible(true);
                             }}
                           >
                             Edit
@@ -86,8 +86,8 @@ const Location = () => {
                           <Button
                             size="sm"
                             onClick={() => {
-                              setDeleteLocationId(location.id)
-                              setIsDeleteLocationModalVisible(true)
+                              setDeleteLocationId(location.id);
+                              setIsDeleteLocationModalVisible(true);
                             }}
                             className={styles.delete}
                           >
@@ -104,22 +104,27 @@ const Location = () => {
         </div>
       </Card>
       {isAddLocationModalVisible && (
-        <AddNewLocationModal hideAddLocationModal={hideAddLocationModal} />
+        <AddNewLocationModal
+          hideAddLocationModal={hideAddLocationModal}
+          setAllLocations={setAllLocations}
+        />
       )}
       {isEditLocationModalVisible && editLocationData && (
         <EditLocationModal
           setEditModalToDefault={setEditModalToDefault}
           editLocationData={editLocationData}
+          setAllLocations={setAllLocations}
         />
       )}
       {isDeleteLocationModalVisible && (
         <DeleteLocationModal
           deleteLocationId={deleteLocationId}
           setDeleteModalToDefault={setDeleteModalToDefault}
+          setAllLocations={setAllLocations}
         />
       )}
     </>
-  )
-}
+  );
+};
 
-export default Location
+export default Location;

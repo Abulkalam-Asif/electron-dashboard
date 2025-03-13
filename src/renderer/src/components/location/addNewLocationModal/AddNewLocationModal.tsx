@@ -1,104 +1,105 @@
-import { useEffect, useState } from 'react'
-import H1 from '@renderer/components/general/h1/H1'
-import InputBox from '@renderer/components/general/inputBox/InputBox'
-import Button from '@renderer/components/general/button/Button'
-import styles from './addNewLocationModal.module.css'
-import Loader from '@renderer/components/general/loader/Loader'
-import { useMutation } from '@apollo/client'
-import { ADD_NEW_LOCATION } from '@renderer/graphql/location'
-import { LocationType } from '@renderer/types'
-import Modal from '@renderer/components/general/modal/Modal'
-import CloseButton from '@renderer/components/general/closeButton/CloseButton'
+import { useEffect, useState } from "react";
+import H1 from "@renderer/components/general/h1/H1";
+import InputBox from "@renderer/components/general/inputBox/InputBox";
+import Button from "@renderer/components/general/button/Button";
+import styles from "./addNewLocationModal.module.css";
+import Loader from "@renderer/components/general/loader/Loader";
+import { useMutation } from "@apollo/client";
+import { ADD_NEW_LOCATION } from "@renderer/graphql/location";
+import { LocationType, LocationWithIdType } from "@renderer/types";
+import Modal from "@renderer/components/general/modal/Modal";
+import CloseButton from "@renderer/components/general/closeButton/CloseButton";
 
 const defaultLocationData: LocationType = {
-  name: '',
-  description: '',
-  pin: ''
-}
+  name: "",
+  description: "",
+  pin: "",
+};
 
 type AddNewLocationModalProps = {
-  hideAddLocationModal: () => void
-}
+  hideAddLocationModal: () => void;
+  setAllLocations: React.Dispatch<React.SetStateAction<LocationWithIdType[] | null>>;
+};
 
-function AddNewLocationModal({ hideAddLocationModal }: AddNewLocationModalProps) {
-  const [addNewLocationMutation] = useMutation(ADD_NEW_LOCATION)
+function AddNewLocationModal({ hideAddLocationModal, setAllLocations }: AddNewLocationModalProps) {
+  const [addNewLocationMutation] = useMutation(ADD_NEW_LOCATION);
 
-  const [locationData, setLocationData] = useState(defaultLocationData)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFirstSubmit, setIsFirstSubmit] = useState(false)
+  const [locationData, setLocationData] = useState(defaultLocationData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFirstSubmit, setIsFirstSubmit] = useState(false);
   const [errors, setErrors] = useState({
-    name: '',
-    description: '',
-    pin: ''
-  })
+    name: "",
+    description: "",
+    pin: "",
+  });
 
   const locationDataInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target
-    setLocationData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { value, name } = e.target;
+    setLocationData((prev) => ({ ...prev, [name]: value }));
+  };
 
   useEffect(
     function validateOnInputChange() {
       if (isFirstSubmit) {
-        validateInput(locationData)
+        validateInput(locationData);
       }
     },
     [locationData]
-  )
+  );
 
   const validateInput = (locationData: LocationType) => {
-    const newErrors = { name: '', description: '', pin: '' }
-    let isValid = true
+    const newErrors = { name: "", description: "", pin: "" };
+    let isValid = true;
 
-    if (locationData.name === '') {
-      newErrors.name = 'Location Name is required'
-      isValid = false
+    if (locationData.name === "") {
+      newErrors.name = "Location Name is required";
+      isValid = false;
     }
-    if (locationData.description === '') {
-      newErrors.description = 'Description is required'
-      isValid = false
+    if (locationData.description === "") {
+      newErrors.description = "Description is required";
+      isValid = false;
     }
-    if (locationData.pin === '') {
-      newErrors.pin = 'Location Pin is required'
-      isValid = false
+    if (locationData.pin === "") {
+      newErrors.pin = "Location Pin is required";
+      isValid = false;
     }
 
-    setErrors(newErrors)
-    return isValid
-  }
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const saveHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!isFirstSubmit) {
-      setIsFirstSubmit(true)
+      setIsFirstSubmit(true);
     }
-    setIsLoading(true)
+    setIsLoading(true);
     if (!validateInput(locationData)) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
     try {
-      const { data } = await addNewLocationMutation({
+      const response = await addNewLocationMutation({
         variables: {
           name: locationData.name,
           description: locationData.description,
-          pin: locationData.pin
-        }
-      })
-      if (data.addNewLocation) {
-        alert('Location added successfully')
-      } else {
-        alert('Failed to add location')
+          pin: locationData.pin,
+        },
+      });
+      const data = response.data.addNewLocation;
+      if (data.success) {
+        // Update the locations list with the new location
+        setAllLocations((prev) => [...(prev || []), data.location]);
       }
+      alert(data.message);
     } catch (error) {
-      console.error('Error adding location:', error)
-      alert('Failed to add location')
+      alert("An error occurred. Please try again.");
     }
-    setLocationData(defaultLocationData)
-    setIsLoading(false)
-    setIsFirstSubmit(false)
-    hideAddLocationModal()
-  }
+    setLocationData(defaultLocationData);
+    setIsLoading(false);
+    setIsFirstSubmit(false);
+    hideAddLocationModal();
+  };
 
   return (
     <>
@@ -139,7 +140,7 @@ function AddNewLocationModal({ hideAddLocationModal }: AddNewLocationModalProps)
       </Modal>
       {isLoading && <Loader text="Adding location..." />}
     </>
-  )
+  );
 }
 
-export default AddNewLocationModal
+export default AddNewLocationModal;
