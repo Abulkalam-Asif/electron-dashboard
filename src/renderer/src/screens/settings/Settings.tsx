@@ -3,41 +3,40 @@ import Card from "../../components/general/card/Card";
 import H1 from "../../components/general/h1/H1";
 import InputBox from "../../components/general/inputBox/InputBox";
 import Button from "../../components/general/button/Button";
-import BackButton from "../../components/general/closeButton/CloseButton";
+import BackButton from "../../components/general/backButton/BackButton";
 import Loader from "../../components/general/loader/Loader";
 import styles from "./settings.module.css";
-import getSettings from "../../actions/getSettings";
 import { SettingsType } from "../../types";
-import updateSettings from "../../actions/updateSettings";
+import { GET_SETTINGS, UPDATE_SETTINGS } from "@renderer/graphql/settings";
+import { useMutation, useQuery } from "@apollo/client";
+import { useAlert } from "@renderer/contexts/AlertContext";
 
 const defaultSettingsData: SettingsType = {
-  ipOrDomain: "",
+  ip: "",
   port: "",
   apiKey: "",
 };
 
 function Settings() {
+  const { showAlert } = useAlert();
+  const { data, loading: isFetchingSettings } = useQuery(GET_SETTINGS);
+
   const [settingsData, setSettingsData] = useState(defaultSettingsData);
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFirstSubmit, setIsFirstSubmit] = useState(false);
   const [errors, setErrors] = useState({
-    ipOrDomain: "",
+    ip: "",
     port: "",
     apiKey: "",
   });
 
-  const fetchSettings = async () => {
-    const data = await getSettings();
-    if (data) {
-      setSettingsData(data);
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    if (data) {
+      setSettingsData(data.getSettings);
+    }
+  }, [data]);
+
+  const [updateSettingsMutation] = useMutation(UPDATE_SETTINGS);
 
   const settingsDataInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -54,11 +53,11 @@ function Settings() {
   );
 
   const validateInput = (settingsData: SettingsType) => {
-    const newErrors = { ipOrDomain: "", port: "", apiKey: "" };
+    const newErrors = { ip: "", port: "", apiKey: "" };
     let isValid = true;
 
-    if (settingsData.ipOrDomain === "") {
-      newErrors.ipOrDomain = "IP or Domain is required";
+    if (settingsData.ip === "") {
+      newErrors.ip = "IP or Domain is required";
       isValid = false;
     }
     if (settingsData.port === "") {
@@ -84,34 +83,37 @@ function Settings() {
       setIsSubmitting(false);
       return;
     }
-    const response = await updateSettings(settingsData);
-    if (response) {
-      alert("Settings updated successfully");
-    } else {
-      alert("Failed to update settings");
-    }
+    const response = await updateSettingsMutation({
+      variables: {
+        ip: settingsData.ip,
+        port: settingsData.port,
+        apiKey: settingsData.apiKey,
+      },
+    });
+    const data = response.data.updateSettings;
+    showAlert({ message: data.message, type: data.success ? "success" : "error" });
     setIsSubmitting(false);
     setIsFirstSubmit(false);
   };
 
-  if (loading) {
+  if (isFetchingSettings) {
     return <Loader text="Loading settings..." />;
   }
 
   return (
-    <Card>
+    <Card cardClassName={styles.card}>
       <div className={styles.header}>
         <BackButton to="/" />
         <H1>Settings</H1>
       </div>
       <form className={styles.form}>
         <InputBox
-          name="ipOrDomain"
+          name="ip"
           label="IP or Domain"
           type="text"
-          value={settingsData.ipOrDomain}
+          value={settingsData.ip}
           inputHandler={settingsDataInputHandler}
-          error={errors.ipOrDomain} // Pass error message to InputBox
+          error={errors.ip}
         />
         <InputBox
           name="port"
@@ -119,7 +121,7 @@ function Settings() {
           type="text"
           value={settingsData.port}
           inputHandler={settingsDataInputHandler}
-          error={errors.port} // Pass error message to InputBox
+          error={errors.port}
         />
         <InputBox
           name="apiKey"
@@ -127,12 +129,9 @@ function Settings() {
           type="text"
           value={settingsData.apiKey}
           inputHandler={settingsDataInputHandler}
-          error={errors.apiKey} // Pass error message to InputBox
+          error={errors.apiKey}
         />
-        <Button
-          disabled={isSubmitting}
-          onClick={saveHandler}
-          className={styles.button}>
+        <Button disabled={isSubmitting} onClick={saveHandler} className={styles.button}>
           Save
         </Button>
       </form>
