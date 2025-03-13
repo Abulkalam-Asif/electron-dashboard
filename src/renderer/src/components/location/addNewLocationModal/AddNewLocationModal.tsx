@@ -9,6 +9,7 @@ import { ADD_NEW_LOCATION } from "@renderer/graphql/location";
 import { LocationType, LocationWithIdType } from "@renderer/types";
 import Modal from "@renderer/components/general/modal/Modal";
 import CloseButton from "@renderer/components/general/closeButton/CloseButton";
+import { useAlert } from "@renderer/contexts/AlertContext";
 
 const defaultLocationData: LocationType = {
   name: "",
@@ -22,6 +23,7 @@ type AddNewLocationModalProps = {
 };
 
 function AddNewLocationModal({ hideAddLocationModal, setAllLocations }: AddNewLocationModalProps) {
+  const { showAlert } = useAlert();
   const [addNewLocationMutation] = useMutation(ADD_NEW_LOCATION);
 
   const [locationData, setLocationData] = useState(defaultLocationData);
@@ -91,9 +93,9 @@ function AddNewLocationModal({ hideAddLocationModal, setAllLocations }: AddNewLo
         // Update the locations list with the new location
         setAllLocations((prev) => [...(prev || []), data.location]);
       }
-      alert(data.message);
+      showAlert({ message: data.message, type: data.success ? "success" : "error" });
     } catch (error) {
-      alert("An error occured. Please refresh and try again.");
+      showAlert({ message: "An error occured. Please refresh and try again.", type: "error" });
     }
     setLocationData(defaultLocationData);
     setIsLoading(false);

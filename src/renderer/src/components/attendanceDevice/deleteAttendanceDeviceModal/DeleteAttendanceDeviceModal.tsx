@@ -1,43 +1,44 @@
 import { useState } from "react";
-import styles from "./deleteLocationModal.module.css";
+import styles from "./deleteAttendanceDeviceModal.module.css";
 import Loader from "@renderer/components/general/loader/Loader";
 import { useMutation } from "@apollo/client";
-import { DELETE_LOCATION } from "@renderer/graphql/location";
 import Modal from "@renderer/components/general/modal/Modal";
 import Button from "@renderer/components/general/button/Button";
-import { LocationWithIdType } from "@renderer/types";
+import { AttendanceDeviceWithLocationType } from "@renderer/types";
+import { DELETE_ATTENDANCE_DEVICE } from "@renderer/graphql/attendanceDevice";
 import { useAlert } from "@renderer/contexts/AlertContext";
 
-type DeleteLocationModalProps = {
-  deleteLocationId: string;
+type DeleteAttendanceDeviceModalProps = {
+  deleteAttendanceDeviceId: string;
   setDeleteModalToDefault: () => void;
-  setAllLocations: React.Dispatch<React.SetStateAction<LocationWithIdType[] | null>>;
+  setAllAttendanceDevices: React.Dispatch<
+    React.SetStateAction<AttendanceDeviceWithLocationType[] | null>
+  >;
 };
 
-function DeleteLocationModal({
-  deleteLocationId,
+function DeleteAttendanceDeviceModal({
+  deleteAttendanceDeviceId,
   setDeleteModalToDefault,
-  setAllLocations,
-}: DeleteLocationModalProps) {
+  setAllAttendanceDevices,
+}: DeleteAttendanceDeviceModalProps) {
   const { showAlert } = useAlert();
-
-  const [deleteLocationMutation] = useMutation(DELETE_LOCATION);
+  const [deleteAttendanceDeviceMutation] = useMutation(DELETE_ATTENDANCE_DEVICE);
   const [isLoading, setIsLoading] = useState(false);
 
   const deleteHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await deleteLocationMutation({
+      const response = await deleteAttendanceDeviceMutation({
         variables: {
-          id: deleteLocationId,
+          id: deleteAttendanceDeviceId,
         },
       });
-      const data = response.data.deleteLocation;
+      const data = response.data.deleteAttendanceDevice;
       if (data.success) {
-        // Remove the deleted location from the list of all locations
-        setAllLocations((prev) =>
-          prev ? prev.filter((location) => location.id !== deleteLocationId) : []
+        // Remove the deleted attendance device from the list
+        setAllAttendanceDevices((prev) =>
+          prev ? prev.filter((device) => device.id !== deleteAttendanceDeviceId) : []
         );
       }
       showAlert({ message: data.message, type: data.success ? "success" : "error" });
@@ -51,7 +52,7 @@ function DeleteLocationModal({
   return (
     <>
       <Modal cardClassName={styles.modalCard}>
-        <div>Are you sure you want to delete this location?</div>
+        <div>Are you sure you want to delete this attendance device?</div>
         <div className={styles.buttons}>
           <Button size="sm" onClick={deleteHandler} className={styles.delete}>
             Delete
@@ -61,9 +62,9 @@ function DeleteLocationModal({
           </Button>
         </div>
       </Modal>
-      {isLoading && <Loader text="Deleting location..." />}
+      {isLoading && <Loader text="Deleting attendance device..." />}
     </>
   );
 }
 
-export default DeleteLocationModal;
+export default DeleteAttendanceDeviceModal;

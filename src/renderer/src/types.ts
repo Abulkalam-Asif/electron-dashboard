@@ -34,3 +34,8 @@ export type SettingsType = {
   port: string;
   apiKey: string;
 };
+
+export type AlertType = {
+  type: "success" | "error" | "warning";
+  message: string;
+};

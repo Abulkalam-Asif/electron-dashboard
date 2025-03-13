@@ -1,18 +1,18 @@
-import { useEffect } from 'react'
-import styles from './card.module.css'
+import { useEffect } from "react";
+import styles from "./card.module.css";
 type CardProps = {
-  children: React.ReactNode
-  sectionClassName?: string
-  cardClassName?: string
-}
+  children: React.ReactNode;
+  sectionClassName?: string;
+  cardClassName?: string;
+};
 
-const Card = ({ children, sectionClassName = '', cardClassName = '' }: CardProps) => {
+const Card = ({ children, sectionClassName = "", cardClassName = "" }: CardProps) => {
   useEffect(() => {
-    const container = document.querySelector(`.${styles.container}`)
+    const container = document.querySelector(`.${styles.container}`);
     if (container) {
-      container.classList.add(styles.enter)
+      container.classList.add(styles.enter);
     }
-  }, [])
+  }, []);
 
   return (
     <>
@@ -20,7 +20,7 @@ const Card = ({ children, sectionClassName = '', cardClassName = '' }: CardProps
         <div className={`${styles.container} ${cardClassName}`}>{children}</div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;

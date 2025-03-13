@@ -9,6 +9,7 @@ import { EDIT_LOCATION } from "@renderer/graphql/location";
 import { LocationType, LocationWithIdType } from "@renderer/types";
 import Modal from "@renderer/components/general/modal/Modal";
 import CloseButton from "@renderer/components/general/closeButton/CloseButton";
+import { useAlert } from "@renderer/contexts/AlertContext";
 
 type EditLocationModalProps = {
   setEditModalToDefault: () => void;
@@ -21,6 +22,8 @@ function EditLocationModal({
   editLocationData,
   setAllLocations,
 }: EditLocationModalProps) {
+  const { showAlert } = useAlert();
+
   const [editLocationMutation] = useMutation(EDIT_LOCATION);
 
   const [locationData, setLocationData] = useState(editLocationData);
@@ -104,9 +107,9 @@ function EditLocationModal({
           });
         });
       }
-      alert(data.message);
+      showAlert({ message: data.message, type: data.success ? "success" : "error" });
     } catch (error) {
-      alert("An error occured. Please refresh and try again.");
+      showAlert({ message: "An error occured. Please refresh and try again.", type: "error" });
     }
     setIsLoading(false);
     setIsFirstSubmit(false);

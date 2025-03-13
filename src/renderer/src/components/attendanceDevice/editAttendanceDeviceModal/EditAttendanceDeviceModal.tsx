@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import Modal from "@renderer/components/general/modal/Modal";
-import { ADD_ATTENDANCE_DEVICE } from "@renderer/graphql/attendanceDevice";
+import { EDIT_ATTENDANCE_DEVICE } from "@renderer/graphql/attendanceDevice";
 import { GET_ALL_LOCATIONS } from "@renderer/graphql/location";
 import {
   AttendanceDeviceType,
@@ -8,7 +8,7 @@ import {
   LocationWithIdType,
 } from "@renderer/types";
 import { useEffect, useState } from "react";
-import styles from "./addNewAttendanceDeviceModal.module.css";
+import styles from "./editAttendanceDeviceModal.module.css";
 import H1 from "@renderer/components/general/h1/H1";
 import Loader from "@renderer/components/general/loader/Loader";
 import CloseButton from "@renderer/components/general/closeButton/CloseButton";
@@ -33,18 +33,21 @@ const defaultErrors = {
   locationRef: "",
 };
 
-type AddNewAttendanceDeviceModalProps = {
-  hideaddNewAttendanceDeviceModal: () => void;
+type EditAttendanceDeviceModalProps = {
+  setEditModalToDefault: () => void;
+  editAttendanceDeviceData: AttendanceDeviceWithLocationType;
   setAllAttendanceDevices: React.Dispatch<
     React.SetStateAction<AttendanceDeviceWithLocationType[] | null>
   >;
 };
 
-function AddNewAttendanceDeviceModal({
-  hideaddNewAttendanceDeviceModal,
+function EditAttendanceDeviceModal({
+  setEditModalToDefault,
+  editAttendanceDeviceData,
   setAllAttendanceDevices,
-}: AddNewAttendanceDeviceModalProps) {
+}: EditAttendanceDeviceModalProps) {
   const { showAlert } = useAlert();
+
   // Fetching locations
   const {
     data,
@@ -58,22 +61,27 @@ function AddNewAttendanceDeviceModal({
   useEffect(() => {
     if (data) {
       setLocations(data.getAllLocations);
-      if (data.getAllLocations.length > 0) {
-        defaultDeviceData.locationRef = data.getAllLocations[0].id;
+      if (locations.length > 0) {
+        defaultDeviceData.locationRef = locations[0].id;
       }
     }
   }, [data]);
-
   useEffect(() => {
     if (error) {
       showAlert({ message: "Error fetching locations", type: "error" });
     }
   }, [error]);
 
-  const [addNewAttendanceDeviceMutation] = useMutation(ADD_ATTENDANCE_DEVICE);
+  const [editAttendanceDeviceMutation] = useMutation(EDIT_ATTENDANCE_DEVICE);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [deviceData, setDeviceData] = useState(defaultDeviceData);
+  const [deviceData, setDeviceData] = useState<AttendanceDeviceType>({
+    name: editAttendanceDeviceData.name,
+    ip: editAttendanceDeviceData.ip,
+    port: editAttendanceDeviceData.port,
+    serialNumber: editAttendanceDeviceData.serialNumber,
+    locationRef: editAttendanceDeviceData.locationRef.id,
+  });
   const [errors, setErrors] = useState(defaultErrors);
   const [isFirstSubmit, setIsFirstSubmit] = useState(false);
 
@@ -114,7 +122,13 @@ function AddNewAttendanceDeviceModal({
   useEffect(
     function validateOnInputChange() {
       if (isFirstSubmit) {
-        validateInput(deviceData);
+        validateInput({
+          name: deviceData.name,
+          ip: deviceData.ip,
+          port: deviceData.port,
+          serialNumber: deviceData.serialNumber,
+          locationRef: deviceData.locationRef,
+        });
       }
     },
     [deviceData]
@@ -126,30 +140,67 @@ function AddNewAttendanceDeviceModal({
       setIsFirstSubmit(true);
     }
     setIsLoading(true);
-    if (!validateInput(deviceData)) {
-      setIsLoading(false);
-      return;
-    }
-    const response = await addNewAttendanceDeviceMutation({
-      variables: {
+    if (
+      !validateInput({
         name: deviceData.name,
         ip: deviceData.ip,
         port: deviceData.port,
         serialNumber: deviceData.serialNumber,
-        locationId: deviceData.locationRef,
-      },
-    });
-    const data = response.data.addNewAttendanceDevice;
-    if (data.success) {
-      setAllAttendanceDevices((prev) => {
-        return prev ? [...prev, data.attendanceDevice] : [data.attendanceDevice];
-      });
+        locationRef: deviceData.locationRef,
+      })
+    ) {
+      setIsLoading(false);
+      return;
     }
-    showAlert({ message: data.message, type: data.success ? "success" : "error" });
+    try {
+      const response = await editAttendanceDeviceMutation({
+        variables: {
+          id: editAttendanceDeviceData.id,
+          name: deviceData.name,
+          ip: deviceData.ip,
+          port: deviceData.port,
+          serialNumber: deviceData.serialNumber,
+          locationId: deviceData.locationRef,
+        },
+      });
+      const data = response.data.editAttendanceDevice;
+      if (data.success) {
+        setAllAttendanceDevices((prev: AttendanceDeviceWithLocationType[] | null) => {
+          if (!prev) return null;
+          return prev?.map((device) => {
+            if (device.id === editAttendanceDeviceData.id) {
+              return {
+                id: editAttendanceDeviceData.id,
+                name: deviceData.name,
+                ip: deviceData.ip,
+                port: deviceData.port,
+                serialNumber: deviceData.serialNumber,
+                locationRef: {
+                  id: deviceData.locationRef,
+                  name:
+                    locations.find((location) => location.id === deviceData.locationRef)?.name ||
+                    "",
+                  description:
+                    locations.find((location) => location.id === deviceData.locationRef)
+                      ?.description || "",
+                  pin: String(
+                    locations.find((location) => location.id === deviceData.locationRef)?.pin || 0
+                  ),
+                },
+              };
+            }
+            return device;
+          });
+        });
+      }
+      showAlert({ message: data.message, type: data.success ? "success" : "error" });
+    } catch (error) {
+      showAlert({ message: "An error occured. Please refresh and try again.", type: "error" });
+    }
     setDeviceData(defaultDeviceData);
     setIsLoading(false);
     setIsFirstSubmit(false);
-    hideaddNewAttendanceDeviceModal();
+    setEditModalToDefault();
   };
 
   return (
@@ -157,13 +208,13 @@ function AddNewAttendanceDeviceModal({
       <Modal cardClassName={styles.modalCard}>
         <div className={styles.header}>
           <H1>Attendance Devices</H1>
-          <CloseButton onClick={hideaddNewAttendanceDeviceModal} />
+          <CloseButton onClick={setEditModalToDefault} />
         </div>
         {isFetchingLocations ? (
           <Loader text="Fetching locations..." />
         ) : !isFetchingLocations && locations.length === 0 ? (
           <p className={styles.noLocationsMessage}>
-            No locations found. Please add a location first to add a device.
+            No locations found. Please add a location first.
           </p>
         ) : (
           !isFetchingLocations &&
@@ -175,7 +226,7 @@ function AddNewAttendanceDeviceModal({
                 type="text"
                 value={deviceData.name}
                 inputHandler={deviceDataInputHandler}
-                error={errors.name} // Pass error message to InputBox
+                error={errors.name}
               />
               <InputBox
                 name="ip"
@@ -183,7 +234,7 @@ function AddNewAttendanceDeviceModal({
                 type="text"
                 value={deviceData.ip}
                 inputHandler={deviceDataInputHandler}
-                error={errors.ip} // Pass error message to InputBox
+                error={errors.ip}
               />
               <InputBox
                 name="port"
@@ -191,7 +242,7 @@ function AddNewAttendanceDeviceModal({
                 type="text"
                 value={deviceData.port}
                 inputHandler={deviceDataInputHandler}
-                error={errors.port} // Pass error message to InputBox
+                error={errors.port}
               />
               <InputBox
                 name="serialNumber"
@@ -199,7 +250,7 @@ function AddNewAttendanceDeviceModal({
                 type="text"
                 value={deviceData.serialNumber}
                 inputHandler={deviceDataInputHandler}
-                error={errors.serialNumber} // Pass error message to InputBox
+                error={errors.serialNumber}
               />
               <SelectBox
                 name="locationRef"
@@ -210,12 +261,12 @@ function AddNewAttendanceDeviceModal({
                 }))}
                 value={deviceData.locationRef}
                 inputHandler={deviceDataInputHandler}
-                error={errors.locationRef} // Pass error message to SelectBox
+                error={errors.locationRef}
               />
               <Button disabled={isLoading} onClick={saveHandler} className={styles.button}>
                 Save
               </Button>
-              {isLoading && <Loader text="Adding device..." />}
+              {isLoading && <Loader text="Updating device..." />}
             </form>
           )
         )}
@@ -224,4 +275,4 @@ function AddNewAttendanceDeviceModal({
   );
 }
 
-export default AddNewAttendanceDeviceModal;
+export default EditAttendanceDeviceModal;

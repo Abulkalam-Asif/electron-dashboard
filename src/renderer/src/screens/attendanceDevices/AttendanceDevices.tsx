@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { AttendanceDeviceWithIdType, AttendanceDeviceWithLocationType } from "@renderer/types";
+import { AttendanceDeviceWithLocationType } from "@renderer/types";
 import { useEffect, useState } from "react";
 import styles from "./attendanceDevices.module.css";
 import Card from "@renderer/components/general/card/Card";
@@ -9,9 +9,13 @@ import Button from "@renderer/components/general/button/Button";
 import BackButton from "@renderer/components/general/backButton/BackButton";
 import { GET_ATTENDANCE_DEVICES } from "@renderer/graphql/attendanceDevice";
 import AddNewAttendanceDeviceModal from "@renderer/components/attendanceDevice/addNewAttendanceDeviceModal/AddNewAttendanceDeviceModal";
+import EditAttendanceDeviceModal from "@renderer/components/attendanceDevice/editAttendanceDeviceModal/EditAttendanceDeviceModal";
+import DeleteAttendanceDeviceModal from "@renderer/components/attendanceDevice/deleteAttendanceDeviceModal/DeleteAttendanceDeviceModal";
 
 const Location = () => {
-  const { data, loading, error } = useQuery(GET_ATTENDANCE_DEVICES);
+  const { data, loading, error } = useQuery(GET_ATTENDANCE_DEVICES, {
+    fetchPolicy: "network-only",
+  });
   const [allAttendanceDevices, setAllAttendanceDevices] = useState<
     AttendanceDeviceWithLocationType[] | null
   >(null);
@@ -23,7 +27,7 @@ const Location = () => {
   const [isEditAttendanceDeviceModalVisible, setIsEditAttendanceDeviceModalVisible] =
     useState(false);
   const [editAttendanceDeviceData, setEditAttendanceDeviceData] =
-    useState<AttendanceDeviceWithIdType | null>(null);
+    useState<AttendanceDeviceWithLocationType | null>(null);
   const setEditModalToDefault = () => {
     setIsEditAttendanceDeviceModalVisible(false);
     setEditAttendanceDeviceData(null);
@@ -57,58 +61,63 @@ const Location = () => {
           </Button>
         </div>
         <div>
-          {allAttendanceDevices && (
-            <>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th align="left">No.</th>
-                    <th align="left">Name</th>
-                    <th align="left">IP</th>
-                    <th align="left">Port</th>
-                    <th align="left">Serial Number</th>
-                    <th align="left">Location</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allAttendanceDevices.map((device, index) => (
-                    <tr key={device.id}>
-                      <td>{index + 1}</td>
-                      <td>{device.name}</td>
-                      <td>{device.ip}</td>
-                      <td>{device.port}</td>
-                      <td>{device.serialNumber}</td>
-                      <td>{device.locationRef.name}</td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              // setEditAttendanceDeviceData(device);
-                              setIsEditAttendanceDeviceModalVisible(true);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setDeleteAttendanceDeviceId(device.id);
-                              setIsDeleteAttendanceDeviceModalVisible(true);
-                            }}
-                            className={styles.delete}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
+          {allAttendanceDevices &&
+            (allAttendanceDevices.length === 0 ? (
+              <div className={styles.noData}>
+                <p>No attendance devices found</p>
+              </div>
+            ) : (
+              <>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th align="left">No.</th>
+                      <th align="left">Name</th>
+                      <th align="left">IP</th>
+                      <th align="left">Port</th>
+                      <th align="left">Serial Number</th>
+                      <th align="left">Location</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
+                  </thead>
+                  <tbody>
+                    {allAttendanceDevices.map((device, index) => (
+                      <tr key={device.id}>
+                        <td>{index + 1}</td>
+                        <td>{device.name}</td>
+                        <td>{device.ip}</td>
+                        <td>{device.port}</td>
+                        <td>{device.serialNumber}</td>
+                        <td>{device.locationRef.name}</td>
+                        <td>
+                          <div className={styles.actions}>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setEditAttendanceDeviceData(device);
+                                setIsEditAttendanceDeviceModalVisible(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setDeleteAttendanceDeviceId(device.id);
+                                setIsDeleteAttendanceDeviceModalVisible(true);
+                              }}
+                              className={styles.delete}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ))}
         </div>
       </Card>
       {isaddNewAttendanceDeviceModalVisible && (
@@ -117,22 +126,21 @@ const Location = () => {
           setAllAttendanceDevices={setAllAttendanceDevices}
         />
       )}
-
-      {/* {isAddLocationModalVisible && (
-        <AddNewLocationModal hideAddLocationModal={hideAddLocationModal} />
-      )}
-      {isEditLocationModalVisible && editLocationData && (
-        <EditLocationModal
+      {isEditAttendanceDeviceModalVisible && editAttendanceDeviceData && (
+        <EditAttendanceDeviceModal
           setEditModalToDefault={setEditModalToDefault}
-          editLocationData={editLocationData}
+          editAttendanceDeviceData={editAttendanceDeviceData}
+          setAllAttendanceDevices={setAllAttendanceDevices}
         />
       )}
-      {isDeleteLocationModalVisible && (
-        <DeleteLocationModal
-          deleteLocationId={deleteLocationId}
+
+      {isDeleteAttendanceDeviceModalVisible && (
+        <DeleteAttendanceDeviceModal
+          deleteAttendanceDeviceId={deleteAttendanceDeviceId}
           setDeleteModalToDefault={setDeleteModalToDefault}
+          setAllAttendanceDevices={setAllAttendanceDevices}
         />
-      )} */}
+      )}
     </>
   );
 };

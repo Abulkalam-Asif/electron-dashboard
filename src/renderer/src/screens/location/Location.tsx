@@ -13,7 +13,9 @@ import BackButton from "@renderer/components/general/backButton/BackButton";
 import DeleteLocationModal from "@renderer/components/location/deleteLocationModal/DeleteLocationModal";
 
 const Location = () => {
-  const { data, loading, error } = useQuery(GET_ALL_LOCATIONS);
+  const { data, loading, error } = useQuery(GET_ALL_LOCATIONS, {
+    fetchPolicy: "network-only",
+  });
   const [allLocations, setAllLocations] = useState<LocationWithIdType[] | null>(null);
 
   const [isAddLocationModalVisible, setIsAddLocationModalVisible] = useState(false);
@@ -53,54 +55,59 @@ const Location = () => {
           </Button>
         </div>
         <div>
-          {allLocations && (
-            <>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th align="left">No.</th>
-                    <th align="left">Name</th>
-                    <th align="left">Description</th>
-                    <th align="left">Pin</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allLocations.map((location, index) => (
-                    <tr key={location.id}>
-                      <td>{index + 1}</td>
-                      <td>{location.name}</td>
-                      <td>{location.description}</td>
-                      <td>{location.pin}</td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setEditLocationData(location);
-                              setIsEditLocationModalVisible(true);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setDeleteLocationId(location.id);
-                              setIsDeleteLocationModalVisible(true);
-                            }}
-                            className={styles.delete}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
+          {allLocations &&
+            (allLocations.length === 0 ? (
+              <div className={styles.noData}>
+                <p>No locations found</p>
+              </div>
+            ) : (
+              <>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th align="left">No.</th>
+                      <th align="left">Name</th>
+                      <th align="left">Description</th>
+                      <th align="left">Pin</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
+                  </thead>
+                  <tbody>
+                    {allLocations.map((location, index) => (
+                      <tr key={location.id}>
+                        <td>{index + 1}</td>
+                        <td>{location.name}</td>
+                        <td>{location.description}</td>
+                        <td>{location.pin}</td>
+                        <td>
+                          <div className={styles.actions}>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setEditLocationData(location);
+                                setIsEditLocationModalVisible(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setDeleteLocationId(location.id);
+                                setIsDeleteLocationModalVisible(true);
+                              }}
+                              className={styles.delete}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ))}
         </div>
       </Card>
       {isAddLocationModalVisible && (

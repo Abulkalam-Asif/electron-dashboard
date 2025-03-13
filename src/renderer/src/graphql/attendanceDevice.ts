@@ -69,23 +69,17 @@ export const EDIT_ATTENDANCE_DEVICE = gql`
       serialNumber: $serialNumber
       locationId: $locationId
     ) {
-      id
-      name
-      ip
-      port
-      serialNumber
-      locationRef {
-        id
-        name
-        description
-        pin
-      }
+      success
+      message
     }
   }
 `;
 
 export const DELETE_ATTENDANCE_DEVICE = gql`
   mutation DeleteAttendanceDevice($id: ID!) {
-    deleteAttendanceDevice(id: $id)
+    deleteAttendanceDevice(id: $id) {
+      success
+      message
+    }
   }
 `;
