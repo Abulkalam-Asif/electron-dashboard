@@ -2,10 +2,13 @@ import { useMutation, useQuery } from "@apollo/client";
 import Modal from "@renderer/components/general/modal/Modal";
 import { ADD_ATTENDANCE_DEVICE } from "@renderer/graphql/attendanceDevice";
 import { GET_ALL_LOCATIONS } from "@renderer/graphql/location";
-import { AttendanceDeviceType, LocationWithIdType } from "@renderer/types";
+import {
+  AttendanceDeviceType,
+  AttendanceDeviceWithLocationType,
+  LocationWithIdType,
+} from "@renderer/types";
 import { useEffect, useState } from "react";
 import styles from "./addNewAttendanceDeviceModal.module.css";
-import BackButton from "@renderer/components/general/backButton/BackButton";
 import H1 from "@renderer/components/general/h1/H1";
 import Loader from "@renderer/components/general/loader/Loader";
 import CloseButton from "@renderer/components/general/closeButton/CloseButton";
@@ -29,10 +32,16 @@ const defaultErrors = {
   locationRef: "",
 };
 
-type AddNewAttendanceDeviceModalProps = { hideAddAttendanceDeviceModal: () => void };
+type AddNewAttendanceDeviceModalProps = {
+  hideaddNewAttendanceDeviceModal: () => void;
+  setAllAttendanceDevices: React.Dispatch<
+    React.SetStateAction<AttendanceDeviceWithLocationType[] | null>
+  >;
+};
 
 function AddNewAttendanceDeviceModal({
-  hideAddAttendanceDeviceModal,
+  hideaddNewAttendanceDeviceModal,
+  setAllAttendanceDevices,
 }: AddNewAttendanceDeviceModalProps) {
   // Fetching locations
   const { data, loading: isFetchingLocations, error } = useQuery(GET_ALL_LOCATIONS);
@@ -112,7 +121,7 @@ function AddNewAttendanceDeviceModal({
       setIsLoading(false);
       return;
     }
-    const { data } = await addNewAttendanceDeviceMutation({
+    const response = await addNewAttendanceDeviceMutation({
       variables: {
         name: deviceData.name,
         ip: deviceData.ip,
@@ -121,14 +130,17 @@ function AddNewAttendanceDeviceModal({
         locationId: deviceData.locationRef,
       },
     });
-    if (data.addNewAttendanceDevice) {
-      alert("Device added successfully");
-    } else {
-      alert("Failed to add device");
+    const data = response.data.addNewAttendanceDevice;
+    if (data.success) {
+      setAllAttendanceDevices((prev) => {
+        return prev ? [...prev, data.attendanceDevice] : [data.attendanceDevice];
+      });
     }
+    alert(data.message);
     setDeviceData(defaultDeviceData);
     setIsLoading(false);
     setIsFirstSubmit(false);
+    hideaddNewAttendanceDeviceModal();
   };
 
   return (
@@ -136,7 +148,7 @@ function AddNewAttendanceDeviceModal({
       <Modal cardClassName={styles.modalCard}>
         <div className={styles.header}>
           <H1>Attendance Devices</H1>
-          <CloseButton onClick={hideAddAttendanceDeviceModal} />
+          <CloseButton onClick={hideaddNewAttendanceDeviceModal} />
         </div>
         {isFetchingLocations ? (
           <Loader text="Fetching locations..." />

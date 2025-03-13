@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_ATTENDANCE_DEVICES = gql`
-  query GetAttendanceDevices {
-    getAttendanceDevices {
+  query getAllAttendanceDevices {
+    getAllAttendanceDevices {
       id
       name
       ip
@@ -19,30 +19,34 @@ export const GET_ATTENDANCE_DEVICES = gql`
 `;
 
 export const ADD_ATTENDANCE_DEVICE = gql`
-  mutation AddAttendanceDevice(
+  mutation addNewAttendanceDevice(
     $name: String!
     $ip: String!
     $port: String!
     $serialNumber: String!
     $locationId: ID!
   ) {
-    addAttendanceDevice(
+    addNewAttendanceDevice(
       name: $name
       ip: $ip
       port: $port
       serialNumber: $serialNumber
       locationId: $locationId
     ) {
-      id
-      name
-      ip
-      port
-      serialNumber
-      locationRef {
+      success
+      message
+      attendanceDevice {
         id
         name
-        description
-        pin
+        ip
+        port
+        serialNumber
+        locationRef {
+          id
+          name
+          description
+          pin
+        }
       }
     }
   }

@@ -16,8 +16,9 @@ const Location = () => {
     AttendanceDeviceWithLocationType[] | null
   >(null);
 
-  const [isAddAttendanceDeviceModalVisible, setIsAddAttendanceDeviceModalVisible] = useState(false);
-  const hideAddAttendanceDeviceModal = () => setIsAddAttendanceDeviceModalVisible(false);
+  const [isaddNewAttendanceDeviceModalVisible, setIsaddNewAttendanceDeviceModalVisible] =
+    useState(false);
+  const hideaddNewAttendanceDeviceModal = () => setIsaddNewAttendanceDeviceModalVisible(false);
 
   const [isEditAttendanceDeviceModalVisible, setIsEditAttendanceDeviceModalVisible] =
     useState(false);
@@ -38,7 +39,7 @@ const Location = () => {
 
   useEffect(() => {
     if (data) {
-      setAllAttendanceDevices(data.getAttendanceDevices);
+      setAllAttendanceDevices(data.getAllAttendanceDevices);
     }
   }, [data]);
 
@@ -51,7 +52,7 @@ const Location = () => {
         <div className={styles.header}>
           <BackButton to="/" />
           <H1>Attendance Devices</H1>
-          <Button onClick={() => setIsAddAttendanceDeviceModalVisible(true)} size="sm">
+          <Button onClick={() => setIsaddNewAttendanceDeviceModalVisible(true)} size="sm">
             + Add Attendance Device
           </Button>
         </div>
@@ -110,8 +111,11 @@ const Location = () => {
           )}
         </div>
       </Card>
-      {isAddAttendanceDeviceModalVisible && (
-        <AddNewAttendanceDeviceModal hideAddAttendanceDeviceModal={hideAddAttendanceDeviceModal} />
+      {isaddNewAttendanceDeviceModalVisible && (
+        <AddNewAttendanceDeviceModal
+          hideaddNewAttendanceDeviceModal={hideaddNewAttendanceDeviceModal}
+          setAllAttendanceDevices={setAllAttendanceDevices}
+        />
       )}
 
       {/* {isAddLocationModalVisible && (

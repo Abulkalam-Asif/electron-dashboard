@@ -106,7 +106,7 @@ function EditLocationModal({
       }
       alert(data.message);
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      alert("An error occured. Please refresh and try again.");
     }
     setIsLoading(false);
     setIsFirstSubmit(false);

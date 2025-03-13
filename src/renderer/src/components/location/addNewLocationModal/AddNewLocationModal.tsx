@@ -93,7 +93,7 @@ function AddNewLocationModal({ hideAddLocationModal, setAllLocations }: AddNewLo
       }
       alert(data.message);
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      alert("An error occured. Please refresh and try again.");
     }
     setLocationData(defaultLocationData);
     setIsLoading(false);
